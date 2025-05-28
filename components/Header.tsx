@@ -30,27 +30,35 @@ export default function Header({ title = 'Settings', showBack = false }: { title
 }
 
 const styles = StyleSheet.create({
-  container: {
-    marginTop: 30,
-    paddingTop: 18,
-    paddingHorizontal: 20,
-    paddingBottom: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: 'blue'
-  },
-  backButton: {
-    paddingRight: 10,
-  },
-  titleContainer: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  title: {
-    textAlign: 'center',
-  },  
-  spacer: {
-    width: 34, // width to match the back button
-  },
-});
+    container: {
+      marginTop: 30,
+      paddingTop: 18,
+      paddingHorizontal: 20,
+      paddingBottom: 16,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      zIndex: 1,
+  
+      // Enhanced bottom shadow
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.15,
+      shadowRadius: 3,
+      elevation: 5,
+    },
+    backButton: {
+      paddingRight: 10,
+    },
+    titleContainer: {
+      flex: 1,
+      alignItems: 'flex-start',
+    },
+    title: {
+      textAlign: 'left',
+    },  
+    spacer: {
+      width: 34,
+    },
+  });
+  
