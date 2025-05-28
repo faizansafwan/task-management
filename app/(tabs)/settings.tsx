@@ -15,12 +15,12 @@ import {
 } from 'react-native';
 
 export default function Settings() {
-  const { theme, setTheme } = useAppTheme(); // ← NEW
-  const isDarkMode = theme === 'dark';       // ← UPDATED
+  const { theme, setTheme } = useAppTheme(); 
+  const isDarkMode = theme === 'dark';       
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
   const toggleTheme = () => {
-    setTheme(isDarkMode ? 'light' : 'dark'); // ← UPDATED
+    setTheme(isDarkMode ? 'light' : 'dark'); 
     Alert.alert('Theme toggled', `Switched to ${isDarkMode ? 'Light' : 'Dark'} Mode`);
   };
 
@@ -40,46 +40,54 @@ export default function Settings() {
   };
 
   return (
-    
-    <ScrollView style={styles.page}>
+    <View style={styles.container}>
       <Header title="Settings" />
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+        <ThemedView style={styles.section}>
+          <ThemedText type="subtitle">Appearance</ThemedText>
+          <View style={styles.row}>
+            <ThemedText>Dark Mode</ThemedText>
+            <Switch value={isDarkMode} onValueChange={toggleTheme} />
+          </View>
+        </ThemedView>
 
-      <ThemedView style={styles.section}>
-        <ThemedText type="subtitle">Appearance</ThemedText>
-        <View style={styles.row}>
-          <ThemedText>Dark Mode</ThemedText>
-          <Switch value={isDarkMode} onValueChange={toggleTheme} />
-        </View>
-      </ThemedView>
+        <ThemedView style={styles.section}>
+          <ThemedText type="subtitle">Reminders</ThemedText>
+          <View style={styles.row}>
+            <ThemedText>Enable Notifications</ThemedText>
+            <Switch value={notificationsEnabled} onValueChange={toggleNotifications} />
+          </View>
+        </ThemedView>
 
-      <ThemedView style={styles.section}>
-        <ThemedText type="subtitle">Reminders</ThemedText>
-        <View style={styles.row}>
-          <ThemedText>Enable Notifications</ThemedText>
-          <Switch value={notificationsEnabled} onValueChange={toggleNotifications} />
-        </View>
-      </ThemedView>
+        <ThemedView style={styles.section}>
+          <ThemedText type="subtitle">General</ThemedText>
+          <TouchableOpacity style={[styles.button, styles.primaryButton]} onPress={clearAllTasks}>
+            <ThemedText style={styles.buttonText}>Clear All Tasks</ThemedText>
+          </TouchableOpacity>
+        </ThemedView>
 
-      <ThemedView style={styles.section}>
-  <ThemedText type="subtitle">General</ThemedText>
-  <TouchableOpacity style={[styles.button, styles.primaryButton]} onPress={clearAllTasks}>
-    <ThemedText style={styles.buttonText}>Clear All Tasks</ThemedText>
-  </TouchableOpacity>
-</ThemedView>
-
-<ThemedView style={styles.section}>
-  <ThemedText type="subtitle">App Info</ThemedText>
-  <ThemedText>Version: 1.0.0</ThemedText>
-  <TouchableOpacity style={[styles.button, styles.secondaryButton]} onPress={contactDeveloper}>
-    <ThemedText style={styles.buttonText}>Contact Developer</ThemedText>
-  </TouchableOpacity>
-</ThemedView>
-
-    </ScrollView>
+        <ThemedView style={styles.section}>
+          <ThemedText type="subtitle">App Info</ThemedText>
+          <ThemedText>Version: 1.0.0</ThemedText>
+          <TouchableOpacity style={[styles.button, styles.secondaryButton]} onPress={contactDeveloper}>
+            <ThemedText style={styles.buttonText}>Contact Developer</ThemedText>
+          </TouchableOpacity>
+        </ThemedView>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
   section: {
     padding: 20,
     gap: 12,
@@ -88,9 +96,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  page: {
-    marginTop: 0,
   },
   button: {
     paddingVertical: 12,
