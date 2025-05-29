@@ -2,17 +2,9 @@ import Header from '@/components/Header';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Colors } from '@/constants/Colors';
-import { useAppTheme } from '@/contexts/ThemeContext'; // ← NEW
+import { useAppTheme } from '@/contexts/ThemeContext';
 import React, { useState } from 'react';
-import {
-  Alert,
-  Linking,
-  ScrollView,
-  StyleSheet,
-  Switch,
-  TouchableOpacity,
-  View
-} from 'react-native';
+import { Alert, Linking, ScrollView, StyleSheet, Switch, TouchableOpacity, View } from 'react-native';
 
 export default function Settings() {
   const { theme, setTheme } = useAppTheme(); 
@@ -41,7 +33,7 @@ export default function Settings() {
 
   return (
     <View style={styles.container}>
-      <Header title="Settings" />
+      <Header title="TManager" />
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         <ThemedView style={styles.section}>
           <ThemedText type="subtitle">Appearance</ThemedText>
