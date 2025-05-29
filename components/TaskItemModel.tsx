@@ -36,10 +36,12 @@ export default function TaskItem({ todo, isChecked, isDisabled, onToggle, onPres
       <ThemedView style={styles.card} darkColor={Colors.primary.Background} lightColor='#ecedeb'>
         <View style={styles.cardContent}>
           <View style={{ flex: 1 }}>
-            <ThemedText type="subtitle">{todo.title}</ThemedText>
+            <View style={styles.titleRow}>
+              <ThemedText type="subtitle">{todo.title}</ThemedText>
+              <ThemedText style={styles.dueDate}>{new Date(todo.dueDate).toLocaleString()}</ThemedText>
+            </View>
             <ThemedText>{todo.description}</ThemedText>
             <Text style={[styles.statusText, getStatusTextStyle()]}>{todo.status} </Text>
-            <ThemedText>Due: {new Date(todo.dueDate).toLocaleString()}</ThemedText>
           </View>
 
           <TouchableOpacity onPress={() => !isDisabled && onToggle(todo.id)} style={[styles.checkbox, isDisabled && 
@@ -94,5 +96,15 @@ const styles = StyleSheet.create({
   },
   failedStatus: {
     backgroundColor: '#fc6d7a', // Light Red
+  },
+  titleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  dueDate: {
+    fontSize: 12,
+    color: '#666',
   },
 });
