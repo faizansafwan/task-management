@@ -35,3 +35,23 @@ export async function deleteTask(id: string) {
     throw new Error(`Failed to delete task with id: ${id}`);
   }
 }
+
+export async function addTask(task: { title: string; description: string; dueDate: string }) {
+  const response = await fetch(`${BASE_URL}/todo`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      ...task,
+      status: 'Pending', // Automatically set to Pending
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to add task');
+  }
+
+  return response.json();
+}
+
