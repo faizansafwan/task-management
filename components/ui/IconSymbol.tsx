@@ -21,6 +21,7 @@ const MAPPING = {
   'list.bullet': 'list',
   'plus.circle.fill': 'add-circle',
   'gear': 'settings',
+  'magnifyingglass': 'search'
 } as IconMapping;
 
 /**
