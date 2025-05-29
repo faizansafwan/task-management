@@ -2,12 +2,12 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from 'expo-router';
 import React, { useState } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
-import { ThemedText } from './ThemedText';
+import { Image, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { ThemedView } from './ThemedView';
 
+
 export default function Header({
-  title = 'Settings',
+  title = 'Tick Marker',
   showBack = false,
   showSearchIcon = false,
   searchQuery = '',
@@ -34,21 +34,25 @@ export default function Header({
         </TouchableOpacity>
       )}
 
-      <View style={styles.centerContainer}>
-        {showSearch ? (
-          <TextInput
-          autoFocus
-          placeholder="Search..."
-          value={searchQuery}
-          onChangeText={onSearchChange}
-          style={styles.input}
-          />
-        ) : (
-          <ThemedText type="title" style={styles.title}>
-            {title}
-          </ThemedText>
-        )}
-      </View>
+<View style={styles.centerContainer}>
+  {showSearch ? (
+    <TextInput
+      autoFocus
+      placeholder="Search..."
+      value={searchQuery}
+      onChangeText={onSearchChange}
+      style={styles.input}
+    />
+  ) : (
+    <View style={styles.iconOnlyContainer}>
+      <Image 
+        source={require('@/assets/images/app-logo.png')}
+        style={styles.logo}
+      />
+    </View>
+  )}
+</View>
+
 
       {showSearchIcon && (
         <TouchableOpacity onPress={toggleSearch} style={styles.iconButton}>
@@ -82,6 +86,16 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 10,
   },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  logo: {
+    width: 40,
+    height: 40,
+    resizeMode: 'contain',
+  },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
@@ -97,4 +111,9 @@ const styles = StyleSheet.create({
   iconButton: {
     padding: 4,
   },
+  iconOnlyContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  
 });
