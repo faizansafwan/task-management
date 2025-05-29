@@ -8,7 +8,8 @@ export async function getTaskList() {
     return response.json();
 }
 
-export async function updateTask(id: string, updatedFields: Partial<{ title: string; description: string; status: string; dueDate: string }>) {
+export async function updateTask(id: string, updatedFields: Partial<{ title: string; description: string; status: string; 
+  dueDate: string }>) {
   const response = await fetch(`${BASE_URL}/todo/${id}`, {
     method: 'PUT',
     headers: {
@@ -22,4 +23,15 @@ export async function updateTask(id: string, updatedFields: Partial<{ title: str
   }
 
   return response.json();
+}
+
+
+export async function deleteTask(id: string) {
+  const response = await fetch(`${BASE_URL}/todo/${id}`, {
+    method: 'DELETE',
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to delete task with id: ${id}`);
+  }
 }
