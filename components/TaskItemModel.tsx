@@ -1,5 +1,6 @@
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { Colors } from '@/constants/Colors';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export type TodoItem = {
@@ -15,9 +16,10 @@ interface TaskItemProps {
   isChecked: boolean;
   isDisabled: boolean;
   onToggle: (id: string) => void;
+  onPress?: (todo: TodoItem) => void;
 }
 
-export default function TaskItem({ todo, isChecked, isDisabled, onToggle }: TaskItemProps) {
+export default function TaskItem({ todo, isChecked, isDisabled, onToggle, onPress }: TaskItemProps) {
   const getStatusTextStyle = () => {
     switch (todo.status) {
       case 'Done':
@@ -30,26 +32,23 @@ export default function TaskItem({ todo, isChecked, isDisabled, onToggle }: Task
   };
 
   return (
-    <ThemedView style={styles.card}>
-      <View style={styles.cardContent}>
-        <View style={{ flex: 1 }}>
-          <ThemedText type="subtitle">{todo.title}</ThemedText>
-          <ThemedText>{todo.description}</ThemedText>
-          <Text style={[styles.statusText, getStatusTextStyle()]}>
-            Status: {todo.status}
-          </Text>
-          <ThemedText>Due: {new Date(todo.dueDate).toLocaleString()}</ThemedText>
-        </View>
+    <TouchableOpacity onPress={() => onPress?.(todo)} activeOpacity={0.8}>
+      <ThemedView style={styles.card} darkColor={Colors.primary.Background} lightColor='#ecedeb'>
+        <View style={styles.cardContent}>
+          <View style={{ flex: 1 }}>
+            <ThemedText type="subtitle">{todo.title}</ThemedText>
+            <ThemedText>{todo.description}</ThemedText>
+            <Text style={[styles.statusText, getStatusTextStyle()]}>{todo.status} </Text>
+            <ThemedText>Due: {new Date(todo.dueDate).toLocaleString()}</ThemedText>
+          </View>
 
-        <TouchableOpacity
-          onPress={() => !isDisabled && onToggle(todo.id)}
-          style={[styles.checkbox, isDisabled && { opacity: 0.4 }]}
-          disabled={isDisabled}
-        >
-          {isChecked && <ThemedText style={styles.checkmark}>✓</ThemedText>}
-        </TouchableOpacity>
-      </View>
-    </ThemedView>
+          <TouchableOpacity onPress={() => !isDisabled && onToggle(todo.id)} style={[styles.checkbox, isDisabled && 
+            { opacity: 0.4 }]} disabled={isDisabled} >
+            {isChecked && <ThemedText style={styles.checkmark}>✓</ThemedText>}
+          </TouchableOpacity>
+        </View>
+      </ThemedView>
+    </TouchableOpacity>
   );
 }
 
@@ -88,12 +87,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   pendingStatus: {
-    backgroundColor: '#cce5ff', // Light Blue
+    backgroundColor: '#9dc8f5', // Light Blue
   },
   doneStatus: {
-    backgroundColor: '#d4edda', // Light Green
+    backgroundColor: '#A4B465', // Light Green
   },
   failedStatus: {
-    backgroundColor: '#f8d7da', // Light Red
+    backgroundColor: '#fc6d7a', // Light Red
   },
 });
