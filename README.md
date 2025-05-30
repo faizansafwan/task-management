@@ -1,29 +1,91 @@
-# Welcome to your Expo app 👋
+# Tick Marker v1.0 - Task Management Mobile App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Tick Marker is a lightweight, user-friendly mobile application built with **React Native**, designed to help busy professionals like Dr. Nimal manage tasks efficiently. It allows users to create, update, delete, and filter tasks by due date and status while maintaining a clean, intuitive UI.
 
-## Get started
 
-1. Install dependencies
+## Features
+
+-  **Search Tasks** by name
+-  **Filter Tasks** by:
+  - Status: Pending, Done, Failed
+  - Due Date: Upcoming, Overdue
+-  **Mark Tasks as Done**
+  - Automatically updates task status to **Done** when marked
+  - Tasks not marked 24 hours after due date are marked **Failed**
+-  **Due Date Constraints**
+  - Users can't select past dates for new tasks
+-  **Dark Mode / Light Mode Toggle**
+-  **Settings Screen**
+  - Clear all tasks at once
+  - Enable/Disable Notifications
+  - Toggle app theme
+
+
+##  API Documentation
+
+Base URL: `https://60a21a08745cd70017576014.mockapi.io/api/v1`
+
+```bash
+   GET /todo  Get all tasks  
+```
+
+```bash
+   POST /todo  Create a new task  
+```
+
+```bash
+   PUT /todo/:id  Update a task   
+```
+
+```bash
+   DELETE  /todo/:id  Delete a task   
+```
+
+**Request Body (POST/PUT):**
+```json
+{
+  "title": "Task title",
+  "description": "Task description"
+}
+```
+
+## Technology Used
+
+- React Native
+- Axios for HTTP requests
+- React Native Modal & DateTimePicker
+- AsyncStorage for theme/notification preferences
+- CSS (StyleSheet) for styling
+
+## Installation & Setup
+
+1. Clone the repo:
+
+   ```bash
+   git clone https://github.com/faizansafwan/task-management.git
+   cd task-management
+   ```
+
+2. Install dependencies
 
    ```bash
    npm install
    ```
 
-2. Start the app
+3. Start the app
 
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+## Assumptions
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- Tasks must have a title, description, and valid future due date.
+- Tasks not completed within 24 hours of due date are marked as Failed
+- Tasks are managed via an external API, and app updates are reflected live.
+- Light/dark mode and notification settings persist locally using AsyncStorage.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+
 
 ## Get a fresh project
 
@@ -33,18 +95,3 @@ When you're ready, run:
 npm run reset-project
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
