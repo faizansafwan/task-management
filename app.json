@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "task-management",
+    "name": "Tick Marker",
     "slug": "task-management",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/app-logo.png",
     "scheme": "taskmanagement",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -13,25 +13,25 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/app-logo.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.faizansafwan.taskmanagement"
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/app-logo.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "image": "./assets/images/app-logo.png",
+          "imageWidth": 400,
+          "backgroundColor": "#000000"
         }
       ]
     ],
