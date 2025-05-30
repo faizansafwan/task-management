@@ -1,3 +1,18 @@
+/**
+ * list.tsx
+ * 
+ * Task List Screen Component
+ * 
+ * This component displays a list of tasks with filtering, search, and pagination capabilities.
+ * Features include:
+ * - Task status management (Pending, Done, Failed)
+ * - Search functionality
+ * - Status and date filtering
+ * - Pagination with "Show More" functionality
+ * - Task editing and deletion
+ * - Automatic status updates for overdue tasks
+ */
+
 import Header from '@/components/Header';
 import TaskItem, { TodoItem } from '@/components/TaskItemModel';
 import { ThemedText } from '@/components/ThemedText';
@@ -8,58 +23,81 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Alert } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
-
 import { Picker } from '@react-native-picker/picker';
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 
 export default function TaskList() {
+  // Task list and UI state management
   const [todos, setTodos] = useState<TodoItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  
+  // Task status tracking
   const [checkedTasks, setCheckedTasks] = useState<Record<string, boolean>>({});
   const [disabledTasks, setDisabledTasks] = useState<Record<string, boolean>>({});
+  
+  // Search and pagination
   const [searchQuery, setSearchQuery] = useState('');
-  const [visibleCount, setVisibleCount] = useState(10); // 👈 show 10 initially
+  const [visibleCount, setVisibleCount] = useState(10);
+  
+  // Modal and date picker state
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedTodo, setSelectedTodo] = useState<TodoItem | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [dateError, setDateError] = useState('');
+  
+  // Filter states
   const [filterStatus, setFilterStatus] = useState('');
   const [filterCreatedAt, setFilterCreatedAt] = useState('');
   const [filterDueDate, setFilterDueDate] = useState('');
 
-
+  /**
+   * Opens the edit modal for a specific task
+   * @param todo - The task to be edited
+   */
   const openModal = (todo: TodoItem) => {
     setSelectedTodo(todo);
     setIsModalVisible(true);
   };
 
+  /**
+   * Closes the edit modal and resets related states
+   */
   const closeModal = () => {
     setIsModalVisible(false);
     setSelectedTodo(null);
     setDateError('');
   };
 
+  /**
+   * Loads tasks from the backend and updates their status based on due dates
+   * Automatically marks tasks as Failed if they are overdue
+   */
   async function loadTodos() {
     try {
       setLoading(true);
+
+      // Fetch task list from backend
       const data = await getTaskList();
       const now = new Date();
 
+      // Initialize status tracking objects
       const updatedCheckedTasks: Record<string, boolean> = {};
       const updatedDisabledTasks: Record<string, boolean> = {};
 
+      // Process each task and update its status
       const updatedData = await Promise.all(
         data.map(async (todo: TodoItem) => {
-
+          // Ensure proper date format
           if (todo.dueDate && todo.dueDate.length === 16) {
             todo.dueDate += ':00Z';
           }
           const due = new Date(todo.dueDate);
           const diffInHours = (now.getTime() - due.getTime()) / (1000 * 60 * 60);
 
+          // Mark overdue tasks as Failed
           if (todo.status !== 'Done' && diffInHours > 24) {
             updatedCheckedTasks[todo.id] = false;
             updatedDisabledTasks[todo.id] = true;
@@ -68,12 +106,14 @@ export default function TaskList() {
             return updatedTodo;
           }
 
+          // Update status tracking
           updatedCheckedTasks[todo.id] = todo.status === 'Done';
           updatedDisabledTasks[todo.id] = false;
           return todo;
         })
       );
 
+      // Update state with processed tasks
       setTodos(updatedData);
       setCheckedTasks(updatedCheckedTasks);
       setDisabledTasks(updatedDisabledTasks);
@@ -84,17 +124,22 @@ export default function TaskList() {
     }
   }
 
+  // Load tasks on component mount
   useEffect(() => {
     loadTodos();
   }, []);
 
-  // Add useFocusEffect to reload tasks when page is focused
+  // Reload tasks when screen is focused
   useFocusEffect(
     useCallback(() => {
       loadTodos();
     }, [])
   );
 
+  /**
+   * Toggles the completion status of a task between Done and Pending
+   * @param id - The ID of the task to toggle
+   */
   const toggleCheck = async (id: string) => {
     const current = checkedTasks[id];
     const newStatus = current ? 'Pending' : 'Done';
@@ -103,30 +148,36 @@ export default function TaskList() {
         ...todos.find((todo) => todo.id === id)!,
         status: newStatus,
       });
-      await loadTodos(); // refresh the list
+      await loadTodos(); // Refresh the list
     } catch (err) {
       setError('Failed to update task');
     }
   };
 
-
+  /**
+   * Filters tasks based on search query and selected filters
+   * Applies both status and date-based filtering
+   */
   const filteredTodos = todos
-  .filter((todo) =>
-    todo.title.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-  .filter((todo) => {
-    if (filterStatus && todo.status !== filterStatus) return false;
+    .filter((todo) =>
+      todo.title.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .filter((todo) => {
+      // Apply status filter
+      if (filterStatus && todo.status !== filterStatus) return false;
 
-    const now = new Date();
-    if (filterDueDate === 'overdue' && new Date(todo.dueDate) > now) return false;
-    if (filterDueDate === 'upcoming' && new Date(todo.dueDate) <= now) return false;
+      // Apply date filter
+      const now = new Date();
+      if (filterDueDate === 'overdue' && new Date(todo.dueDate) > now) return false;
+      if (filterDueDate === 'upcoming' && new Date(todo.dueDate) <= now) return false;
 
-    return true;
-  });
+      return true;
+    });
 
-
+  // Get paginated tasks
   const visibleTodos = filteredTodos.slice(0, visibleCount); 
 
+  // Loading state UI
   if (loading) {
     return (
       <View style={styles.center}>
@@ -135,6 +186,7 @@ export default function TaskList() {
     );
   }
 
+  // Error state UI
   if (error) {
     return (
       <View style={styles.center}>
@@ -145,98 +197,84 @@ export default function TaskList() {
 
   return (
     <ScrollView>
+      {/* Header with search functionality */}
       <Header title='TManager' showSearchIcon={true} searchQuery={searchQuery} onSearchChange={setSearchQuery} />
-
-
-
 
       <ThemedView style={styles.container}>
         
-              <View style={styles.filterBar}>
+        {/* Filter controls */}
+        <View style={styles.filterBar}>
 
-                {/* Filter by Status */}
-                <View style={styles.pickerContainer}>
-                  <Picker
-                    selectedValue={filterStatus}
-                    style={styles.picker}
-                    onValueChange={(itemValue) => setFilterStatus(itemValue)}
-                  >
-                    <Picker.Item label="Status" value="" />
-                    <Picker.Item label="Pending" value="Pending" />
-                    <Picker.Item label="Done" value="Done" />
-                    <Picker.Item label="Failed" value="Failed" />
-                  </Picker>
-                </View>
+          {/* Status filter dropdown */}
+          <View style={styles.pickerContainer}>
+            <Picker selectedValue={filterStatus} style={styles.picker} onValueChange={(itemValue) => setFilterStatus(itemValue)} >
 
-                {/* Filter by Date */}
-                <View style={styles.pickerContainer}>
-                  <Picker
-                    selectedValue={filterDueDate}
-                    style={styles.picker}
-                    onValueChange={(itemValue) => setFilterDueDate(itemValue)} >
-                     <Picker.Item label="Overdue" value="overdue" />
-                     <Picker.Item label="Upcoming" value="upcoming" />
-                  </Picker>
-                </View>
-              </View>
+              {/* Status filter options */}
+              <Picker.Item label="Status" value="" />
+              <Picker.Item label="Pending" value="Pending" />
+              <Picker.Item label="Done" value="Done" />
+              <Picker.Item label="Failed" value="Failed" />
+            </Picker>
+          </View>
 
+          {/* Date filter dropdown */}
+          <View style={styles.pickerContainer}>
+            <Picker selectedValue={filterDueDate} style={styles.picker} onValueChange={(itemValue) => setFilterDueDate(itemValue)} >
 
+              {/* Date filter options */}
+              <Picker.Item label="Overdue" value="overdue" />
+              <Picker.Item label="Upcoming" value="upcoming" />
+            </Picker>
+          </View>
+
+        </View>
+
+        {/* rendering Task list */}
         {visibleTodos.map((todo) => (
-          <TaskItem key={todo.id} todo={todo} isChecked={checkedTasks[todo.id]} isDisabled={disabledTasks[todo.id]}
-            onToggle={toggleCheck} onPress={openModal} />
+          <TaskItem  key={todo.id}  todo={todo}  isChecked={checkedTasks[todo.id]}  isDisabled={disabledTasks[todo.id]}
+           onToggle={toggleCheck} onPress={openModal} />
         ))}
 
+        {/* Show more button */}
         {visibleCount < filteredTodos.length && (
-          <TouchableOpacity onPress={() => setVisibleCount(prev => prev + 10)} style={styles.showMoreContainer}>
-              <ThemedText type="default" style={styles.showMoreText}>Show More</ThemedText>
+          <TouchableOpacity  onPress={() => setVisibleCount(prev => prev + 10)}  style={styles.showMoreContainer}>
+            <ThemedText type="default" style={styles.showMoreText}>Show More</ThemedText>
           </TouchableOpacity>
-          
         )}
 
-        <Modal visible={isModalVisible} transparent={true} animationType="fade" onRequestClose={closeModal}>
+        {/* Edit task modal */}
+        <Modal visible={isModalVisible} transparent={true} animationType="fade" onRequestClose={closeModal} >
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>Edit Task</Text>
 
+              {/* Task title input */}
               <Text style={styles.inputLabel}>Title</Text>
-              <TextInput
-                style={styles.stylishInput}
-                value={selectedTodo?.title}
-                onChangeText={(text) =>
+              <TextInput  style={styles.stylishInput}  value={selectedTodo?.title}  onChangeText={(text) =>
                   setSelectedTodo((prev) => prev ? { ...prev, title: text } : null)
-                }
-                placeholder="Title"
-              />
+                }  placeholder="Title" />
 
+              {/* Task description input */}
               <Text style={styles.inputLabel}>Description</Text>
-              <TextInput
-                style={styles.stylishInput}
-                value={selectedTodo?.description}
-                onChangeText={(text) =>
+              <TextInput  style={styles.stylishInput} value={selectedTodo?.description} onChangeText={(text) =>
                   setSelectedTodo((prev) => prev ? { ...prev, description: text } : null)
-                }
-                placeholder="Description"
-                multiline
-              />
+                }  placeholder="Description"  multiline />
 
+              {/* Task status display */}
               <Text style={styles.inputLabel}>Status</Text>
-              <TextInput
-                style={[styles.stylishInput, { color: '#aaa' }]}
-                value={selectedTodo?.status}
-                editable={false}
-                placeholder="Status"
-              />
+              <TextInput  style={[styles.stylishInput, { color: '#aaa' }]} value={selectedTodo?.status}  editable={false}
+                placeholder="Status"  />
 
+              {/* Due date picker */}
               <Text style={styles.inputLabel}>Due Date</Text>
-              <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.datePickerTrigger}>
+              <TouchableOpacity  onPress={() => setShowDatePicker(true)}  style={styles.datePickerTrigger} >
                 <Text style={styles.datePickerText}>
                   {selectedTodo?.dueDate ? new Date(selectedTodo.dueDate).toLocaleString() : 'Select Due Date'}
                 </Text>
               </TouchableOpacity>
 
-              <DateTimePickerModal
-                isVisible={showDatePicker}
-                mode="datetime"
+              {/* Date picker modal */}
+              <DateTimePickerModal  isVisible={showDatePicker}  mode="datetime" 
                 date={selectedTodo?.dueDate ? new Date(selectedTodo.dueDate) : new Date()}
                 onConfirm={(selectedDate) => {
                   const now = new Date();
@@ -259,13 +297,15 @@ export default function TaskList() {
                 }}
               />
 
+              {/* Date error message */}
               {dateError ? (
                 <Text style={styles.errorText}>{dateError}</Text>
               ) : null}
 
+              {/* Action buttons */}
               <View style={styles.buttonRow}>
-                <TouchableOpacity
-                  onPress={() => {
+                {/* Update button */}
+                <TouchableOpacity  onPress={() => {
                     if (selectedTodo) {
                       Alert.alert(
                         'Confirm Update',
@@ -291,13 +331,13 @@ export default function TaskList() {
                         ]
                       );
                     }
-                  }}
-                  style={styles.updateButton} >
+                  }} 
+                  style={styles.updateButton}  >
                   <Text style={styles.updateText}>Update</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                  onPress={() => {
+                {/* Delete button */}
+                <TouchableOpacity onPress={() => {
                     if (selectedTodo) {
                       Alert.alert(
                         'Confirm Delete',
@@ -320,17 +360,15 @@ export default function TaskList() {
                         ]
                       );
                     }
-                  }}
-                  style={styles.deleteButton} >
+                  }} 
+                  style={styles.deleteButton}
+                >
                   <Text style={styles.deleteButtonText}>Delete</Text>
                 </TouchableOpacity>
-
               </View>
-
             </View>
           </View>
         </Modal>
-
       </ThemedView>
     </ScrollView>
   );
