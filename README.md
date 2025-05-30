@@ -5,20 +5,27 @@ Tick Marker is a lightweight, user-friendly mobile application built with **Reac
 
 ## Features
 
-**Search Tasks** by name
-**Filter Tasks** by:
+**Search Tasks**  
+Search tasks by name.
+
+**Filter Tasks**  
+Filter tasks by:
   - Status: Pending, Done, Failed
   - Due Date: Upcoming, Overdue
-**Mark Tasks as Done**
-  - Automatically updates task status to **Done** when marked
-  - Tasks not marked 24 hours after due date are marked **Failed**
-**Due Date Constraints**
-  - Users can't select past dates for new tasks
+
+**Mark Tasks as Done**  
+- Automatically updates task status to **Done** when marked  
+- Tasks not marked 24 hours after due date are marked **Failed**
+
+**Due Date Constraints**  
+- Users can't select past dates for new tasks
+
 **Dark Mode / Light Mode Toggle**
-**Settings Screen**
-  - Clear all tasks at once
-  - Enable/Disable Notifications
-  - Toggle app theme
+
+**Settings Screen**  
+- Clear all tasks at once  
+- Enable/Disable Notifications  
+- Toggle app theme  
 
 
 ##  API Documentation
