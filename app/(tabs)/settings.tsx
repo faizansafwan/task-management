@@ -3,16 +3,17 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Colors } from '@/constants/Colors';
 import { useAppTheme } from '@/contexts/ThemeContext';
+import { deleteTask, getTaskList } from '@/lib/api';
 import React, { useState } from 'react';
 import { Alert, Linking, ScrollView, StyleSheet, Switch, TouchableOpacity, View } from 'react-native';
 
 export default function Settings() {
-  const { theme, setTheme } = useAppTheme(); 
-  const isDarkMode = theme === 'dark';       
+  const { theme, setTheme } = useAppTheme();
+  const isDarkMode = theme === 'dark';
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
   const toggleTheme = () => {
-    setTheme(isDarkMode ? 'light' : 'dark'); 
+    setTheme(isDarkMode ? 'light' : 'dark');
     Alert.alert('Theme toggled', `Switched to ${isDarkMode ? 'Light' : 'Dark'} Mode`);
   };
 
@@ -23,7 +24,23 @@ export default function Settings() {
   const clearAllTasks = () => {
     Alert.alert('Confirm', 'Are you sure you want to delete all tasks?', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: () => console.log('Tasks cleared') },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            const tasks = await getTaskList();
+            const taskIds = tasks.map((task: any) => task.id);
+
+            await Promise.all(taskIds.map((id: string) => deleteTask(id)));
+
+            Alert.alert('Success', 'All tasks have been deleted.');
+          } catch (error) {
+            console.error(error);
+            Alert.alert('Error', 'Failed to delete some or all tasks.');
+          }
+        },
+      },
     ]);
   };
 
@@ -33,7 +50,7 @@ export default function Settings() {
 
   return (
     <View style={styles.container}>
-      <Header title="TManager" />
+      <Header />
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         <ThemedView style={styles.section}>
           <ThemedText type="subtitle">Appearance</ThemedText>
